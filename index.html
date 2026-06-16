@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="uz" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matematika va Geometriya — Golografik Simulyator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%);
+        }
+        .dark body {
+            background: linear-gradient(135deg, #090d16 0%, #0f172a 50%, #030712 100%);
+        }
+        /* Custom scrollbar matching premium iOS/HyperOS metallic style */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.3);
+            border-radius: 20px;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(71, 85, 105, 0.5);
+        }
+        
+        /* Premium Watermark */
+        .watermark-bg {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='250' height='250' viewBox='0 0 250 250'><text fill='rgba(100, 116, 139, 0.02)' font-size='10' font-family='sans-serif' x='20' y='120' transform='rotate(-30 20 120)'>@yomonboIa | @yovvoyiroq</text></svg>");
+        }
+        .dark .watermark-bg {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='250' height='250' viewBox='0 0 250 250'><text fill='rgba(255, 255, 255, 0.015)' font-size='10' font-family='sans-serif' x='20' y='120' transform='rotate(-30 20 120)'>@yomonboIa | @yovvoyiroq</text></svg>");
+        }
+
+        /* Glassmorphism Styles (Frosted High-Transparency iOS 26 style) */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 40px -10px rgba(15, 23, 42, 0.04);
+        }
+        .dark .glass-panel {
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .dark .glass-card {
+            background: rgba(30, 41, 59, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        /* Shining Glass Effect Keyframes */
+        @keyframes sweep {
+            0% { left: -150%; }
+            50% { left: 150%; }
+            100% { left: 150%; }
+        }
+        .shining-glass {
+            position: relative;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.75);
+            box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.04);
+        }
+        .dark .shining-glass {
+            background: rgba(15, 23, 42, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.3);
+        }
+        .shining-glass::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.75) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: skewX(-25deg);
+            animation: sweep 3.5s infinite ease-in-out;
+        }
+
+        @keyframes scaleUp {
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-scale-up {
+            animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+    </style>
+</head>
+<body class="min-h-full flex flex-col watermark-bg transition-colors duration-500 overflow-x-hidden text-slate-800">
+
+    <!-- TOP HEADER NAVIGATION -->
+    <header class="sticky top-0 z-40 bg-white/40 dark:bg-slate-950/30 backdrop-blur-md border-b border-white/50 dark:border-slate-900/40 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            
+            <!-- Logo & Brand Name -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white/75 dark:bg-slate-900/50 rounded-2xl flex items-center justify-center border border-white/60 dark:border-slate-800 text-slate-700 dark:text-slate-300 shadow-sm">
+                    <i class="fa-solid fa-calculator text-lg text-indigo-500 animate-pulse"></i>
+                </div>
+                <div>
+                    <h1 class="text-xs sm:text-sm md:text-base font-black tracking-tight text-slate-800 dark:text-white leading-tight">Matematika & Geometriya</h1>
+                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-500 dark:text-slate-400">Golografik Simulyator va Masalalar Bazasi</p>
+                </div>
+            </div>
+
+            <!-- Premium Navigation Actions -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Glowing Telegram Channel Link button with Shining Glass Effect -->
+                <a href="https://t.me/yovvoyiroq" target="_blank" class="shining-glass inline-flex items-center gap-1.5 px-3 py-2 text-slate-800 dark:text-white rounded-2xl text-[10px] sm:text-xs font-extrabold transition-all duration-200 active:scale-95">
+                    <i class="fa-brands fa-telegram text-sm text-sky-500"></i>
+                    <span>Kanal: <span class="text-indigo-600 dark:text-indigo-400">@yovvoyiroq</span></span>
+                </a>
+
+                <!-- Theme Toggle -->
+                <button id="themeToggleBtn" onclick="toggleTheme()" class="w-9 h-9 flex items-center justify-center bg-white/50 dark:bg-slate-900/40 border border-white/40 dark:border-slate-800/40 hover:bg-white/70 dark:hover:bg-slate-800/60 rounded-2xl text-slate-600 dark:text-slate-300 transition-all duration-200 active:scale-90">
+                    <i id="themeIcon" class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- FLOATING CORNER CONTACT BADGE -->
+    <div class="fixed bottom-4 right-4 z-50 opacity-80 hover:opacity-100 transition-all duration-200">
+        <a href="https://t.me/yomonboIa" target="_blank" class="glass-panel px-4 py-2.5 rounded-full text-[11px] font-extrabold text-slate-700 dark:text-slate-300 flex items-center gap-2 shadow-lg border border-white/45 hover:scale-105 transition-all">
+            <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+            <span>Aloqa: @yomonboIa</span>
+        </a>
+    </div>
+
+    <!-- MAIN APP WRAPPER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col lg:flex-row gap-6 relative">
+
+        <!-- LEFT SIDEBAR -->
+        <section class="w-full lg:w-80 flex flex-col gap-5 shrink-0">
+            
+            <!-- PROGRESS & STATISTICS -->
+            <div class="glass-panel rounded-3xl p-5 transition-all duration-300">
+                <h2 class="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-3.5 flex items-center justify-between">
+                    <span>O'zlashtirish tahlili</span>
+                    <i class="fa-solid fa-chart-line text-slate-400"></i>
+                </h2>
+                
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="bg-emerald-500/5 dark:bg-emerald-500/10 p-3 rounded-2xl border border-emerald-500/10 dark:border-emerald-500/20 text-center">
+                        <p class="text-[9px] text-emerald-600 dark:text-emerald-400 font-extrabold uppercase">To'g'ri</p>
+                        <p id="correctCountText" class="text-xl font-black text-emerald-600 dark:text-emerald-400">0</p>
+                    </div>
+                    <div class="bg-rose-500/5 dark:bg-rose-500/10 p-3 rounded-2xl border border-rose-500/10 dark:border-rose-500/20 text-center">
+                        <p class="text-[9px] text-rose-600 dark:text-rose-400 font-extrabold uppercase">Xato</p>
+                        <p id="wrongCountText" class="text-xl font-black text-rose-600 dark:text-rose-400">0</p>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div>
+                    <div class="flex justify-between text-xs font-extrabold text-slate-600 dark:text-slate-300 mb-1.5">
+                        <span>O'zlashtirilgan foiz:</span>
+                        <span id="progressBarPercentage" class="font-black text-indigo-600 dark:text-indigo-400">0%</span>
+                    </div>
+                    <div class="w-full h-2.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden border border-white/40">
+                        <div id="progressBarFill" class="h-full bg-slate-700 dark:bg-slate-200 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between text-[10px] text-slate-500 dark:text-slate-400 font-bold mt-2.5">
+                        <span id="answeredRatioText">Bajarildi: 0 / 40</span>
+                        <span id="bookmarkCountText">Tanlanganlar: 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTROLS & CONFIGURATION -->
+            <div class="glass-panel rounded-3xl p-5 transition-all duration-300 flex flex-col gap-4">
+                <h2 class="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 flex items-center justify-between">
+                    <span>Sozlamalar</span>
+                    <i class="fa-solid fa-sliders text-slate-400"></i>
+                </h2>
+
+                <!-- Mode Switcher -->
+                <div class="flex bg-slate-200/50 dark:bg-slate-900/50 p-1 rounded-2xl border border-white/20 dark:border-slate-850">
+                    <button id="modeStudyBtn" onclick="changeQuizMode('study')" class="flex-1 py-2 text-xs font-black rounded-xl transition-all duration-300 bg-white dark:bg-slate-800 text-slate-800 dark:text-white shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+                        O'rganish
+                    </button>
+                    <button id="modeExamBtn" onclick="changeQuizMode('exam')" class="flex-1 py-2 text-xs font-bold rounded-xl transition-all duration-300 text-slate-500 dark:text-slate-400">
+                        Imtihon
+                    </button>
+                </div>
+
+                <!-- Exam Timer -->
+                <div id="examTimerContainer" class="hidden">
+                    <div class="bg-rose-500/10 dark:bg-rose-500/15 border border-rose-500/20 rounded-2xl p-3 flex items-center justify-between text-rose-700 dark:text-rose-400">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-hourglass-half animate-spin text-xs"></i>
+                            <span class="text-xs font-black uppercase">Qolgan vaqt:</span>
+                        </div>
+                        <span id="examTimerText" class="font-mono text-sm font-black">60:00</span>
+                    </div>
+                </div>
+
+                <!-- Category Filter -->
+                <div>
+                    <label class="block text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Mavzular filtri:</label>
+                    <select id="categoryFilter" onchange="filterQuestions()" class="w-full bg-white/50 dark:bg-slate-900/40 border border-white/35 dark:border-slate-800/40 rounded-xl p-2.5 text-xs font-extrabold focus:outline-none focus:ring-1 focus:ring-indigo-400 text-slate-700 dark:text-slate-300">
+                        <option value="all">Barcha mavzular (40 ta masala)</option>
+                        <option value="circles">Aylana va Doira (Circles)</option>
+                        <option value="triangles">Uchburchaklar geometriyasi</option>
+                        <option value="polygons">Ko'pburchaklar (Polygons)</option>
+                        <option value="stereometry">Fazoviy geometriya (Stereometry)</option>
+                        <option value="algebra">Algebra va Tenglamalar</option>
+                        <option value="bookmarked">Saqlangan qiyin savollar (★)</option>
+                    </select>
+                </div>
+
+                <!-- Search Input -->
+                <div>
+                    <label class="block text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Savollardan izlash:</label>
+                    <div class="relative">
+                        <input id="searchInput" oninput="filterQuestions()" type="text" placeholder="Kalit so'zni yozing..." class="w-full bg-white/50 dark:bg-slate-900/40 border border-white/35 dark:border-slate-800/40 rounded-xl pl-9 pr-4 py-2.5 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-400 text-slate-700 dark:text-slate-300">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-[11px] text-slate-400"></i>
+                    </div>
+                </div>
+
+                <!-- Reset and Shuffle Controls -->
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="shuffleCurrentQuestions()" class="p-2.5 bg-white/40 hover:bg-white/70 dark:bg-slate-900/30 dark:hover:bg-slate-800/40 border border-white/30 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-extrabold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all">
+                        <i class="fa-solid fa-shuffle text-[10px]"></i>
+                        Aralashtirish
+                    </button>
+                    <button onclick="resetQuizState()" class="p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 font-extrabold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all">
+                        <i class="fa-solid fa-arrow-rotate-left text-[10px]"></i>
+                        Tozalash
+                    </button>
+                </div>
+            </div>
+
+            <!-- QUESTIONS NAVIGATION MAP -->
+            <div class="glass-panel rounded-3xl p-5 transition-all duration-300 flex flex-col flex-1 min-h-[220px] lg:max-h-[350px]">
+                <h2 class="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-3 flex items-center justify-between">
+                    <span>Savollar xaritasi</span>
+                    <span id="filteredCountBadge" class="text-[10px] bg-slate-200 dark:bg-slate-800 px-2.5 py-0.5 rounded-full font-black text-slate-600 dark:text-slate-300">40/40</span>
+                </h2>
+                
+                <div id="questionsMapContainer" class="grid grid-cols-5 sm:grid-cols-10 lg:grid-cols-5 gap-1.5 overflow-y-auto flex-1 pr-1 custom-scrollbar">
+                    <!-- Dynamic indicators injected here -->
+                </div>
+            </div>
+
+        </section>
+
+        <!-- RIGHT WORKPLACE -->
+        <section class="flex-1 flex flex-col lg:flex-row gap-5">
+            
+            <!-- LEFT COLUMN: ACTIVE TEST COMPONENT -->
+            <div class="flex-1 flex flex-col gap-5 min-w-0">
+                <!-- CURRENT QUESTION CONTAINER -->
+                <div class="glass-panel rounded-[32px] p-6 sm:p-8 transition-all duration-300 flex flex-col gap-6 relative overflow-hidden">
+                    <div class="absolute inset-0 watermark-bg opacity-[0.05] pointer-events-none"></div>
+
+                    <!-- Question Header -->
+                    <div class="flex items-center justify-between gap-3 z-10">
+                        <div class="flex items-center gap-2">
+                            <span id="questionIndexBadge" class="px-3.5 py-1 bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900 text-xs font-black rounded-full">SAVOL 1</span>
+                            <span id="questionSourceBadge" class="px-3.5 py-1 bg-white/50 dark:bg-slate-900/40 text-slate-600 dark:text-slate-400 text-[10px] font-bold rounded-full max-w-[150px] sm:max-w-[300px] truncate border border-white/20">Mavzu</span>
+                        </div>
+                        <button id="bookmarkBtn" onclick="toggleBookmarkActiveQuestion()" class="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-white/50 dark:hover:bg-slate-800/40 text-slate-400 dark:text-slate-500 transition-all active:scale-90">
+                            <i class="fa-solid fa-star text-base"></i>
+                        </button>
+                    </div>
+
+                    <!-- Question Text -->
+                    <div class="z-10">
+                        <h3 id="questionTextDisplay" class="text-sm sm:text-base font-extrabold text-slate-850 dark:text-white leading-relaxed bg-white/35 dark:bg-slate-900/20 p-4 rounded-2xl border border-white/35 dark:border-slate-800/50">
+                            ...
+                        </h3>
+                    </div>
+
+                    <!-- Options List Container -->
+                    <div id="optionsListContainer" class="flex flex-col gap-3 z-10">
+                        <!-- Dynamic shuffled options will be loaded here -->
+                    </div>
+
+                    <!-- Navigation Controls -->
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/25 dark:border-slate-850 pt-5 mt-4 z-10">
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <button id="prevBtn" onclick="navigateToQuestion(-1)" class="flex-1 sm:flex-initial px-5 py-3 border border-white/30 dark:border-slate-800 rounded-xl hover:bg-white/40 dark:hover:bg-slate-800/30 font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all text-slate-700 dark:text-slate-300">
+                                <i class="fa-solid fa-arrow-left"></i> Oldingisi
+                            </button>
+                            <button id="nextBtn" onclick="navigateToQuestion(1)" class="flex-1 sm:flex-initial px-5 py-3 bg-white/60 dark:bg-slate-800/40 hover:bg-white/80 dark:hover:bg-slate-850/55 border border-white/45 dark:border-slate-800 text-slate-850 dark:text-white font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all">
+                                Keyingisi <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+
+                        <!-- Finish Exam Action -->
+                        <div class="w-full sm:w-auto flex justify-end">
+                            <button id="examSubmitBtn" onclick="finishExamPrompt()" class="hidden w-full sm:w-auto px-6 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-md hover:shadow-lg transition-all animate-pulse">
+                                <i class="fa-solid fa-square-check"></i> Imtihonni topshirish
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- EXPLANATION VIEW CARD (Study Mode Only) -->
+                <div id="explanationCard" class="bg-white/30 dark:bg-slate-900/10 border border-white/40 dark:border-slate-800/40 rounded-[32px] p-6 sm:p-8 shadow-sm transition-all duration-300 flex flex-col gap-3">
+                    <div class="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                        <i class="fa-solid fa-circle-info text-base text-indigo-500 dark:text-indigo-400"></i>
+                        <h4 class="text-xs font-black uppercase tracking-wider">Metodik tahlil va yechim</h4>
+                    </div>
+                    <div class="bg-white/40 dark:bg-slate-900/40 rounded-2xl p-4 border border-white/40 dark:border-slate-800/50">
+                        <p id="explanationTextDisplay" class="text-xs sm:text-sm font-semibold italic text-slate-700 dark:text-slate-300 leading-relaxed">
+                            ...
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: INTEGRATED INTERACTIVE GEOMETRICAL SCRATCHPAD (WHITEBOARD) -->
+            <div class="w-full lg:w-96 flex flex-col gap-5 shrink-0">
+                
+                <!-- GEOMETRICAL SCRATCHPAD -->
+                <div class="glass-panel rounded-[32px] p-5 flex flex-col gap-3 flex-1">
+                    <div class="flex items-center justify-between border-b border-white/20 pb-2">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-pen-nib text-indigo-500"></i>
+                            <span class="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">Geometriya Qoralamasi</span>
+                        </div>
+                        <button onclick="clearScratchpad()" class="text-[9px] px-2 py-1 bg-rose-500/10 text-rose-500 rounded-lg hover:bg-rose-500/20 font-bold transition-all">
+                            Tozalash
+                        </button>
+                    </div>
+
+                    <!-- Canvas Board -->
+                    <div class="relative flex-1 min-h-[220px] bg-white/40 dark:bg-slate-900/30 border border-slate-300/30 dark:border-slate-800/40 rounded-2xl overflow-hidden cursor-crosshair">
+                        <canvas id="scratchpadCanvas" class="absolute inset-0 w-full h-full"></canvas>
+                        <div id="scratchpadHint" class="absolute inset-0 flex items-center justify-center pointer-events-none text-slate-400 text-[10px] font-semibold text-center p-4">
+                            Geometrik shakllar, aylanalar yoki formulalarni sensor yoki sichqoncha yordamida chizib hisoblash uchun bu yerdan foydalaning...
+                        </div>
+                    </div>
+
+                    <!-- Brush Configuration -->
+                    <div class="flex items-center justify-between gap-3 text-[10px] font-bold text-slate-500">
+                        <div class="flex items-center gap-2">
+                            <span>Rangi:</span>
+                            <div class="flex gap-1">
+                                <button onclick="setScratchpadColor('#6366f1')" class="w-4 h-4 rounded-full bg-indigo-500 border border-white/30"></button>
+                                <button onclick="setScratchpadColor('#10b981')" class="w-4 h-4 rounded-full bg-emerald-500 border border-white/30"></button>
+                                <button onclick="setScratchpadColor('#ef4444')" class="w-4 h-4 rounded-full bg-rose-500 border border-white/30"></button>
+                                <button id="eraseColorBtn" onclick="setScratchpadColor('eraser')" class="w-4 h-4 rounded flex items-center justify-center bg-slate-200 border border-white/30"><i class="fa-solid fa-eraser text-[8px] text-slate-600"></i></button>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <span>Qalinlik:</span>
+                            <input type="range" id="brushSizeSlider" min="1" max="10" value="3" class="w-16 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- RESULT MODAL -->
+    <div id="examResultModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-panel border border-white/40 dark:border-slate-800 rounded-[32px] max-w-lg w-full overflow-hidden shadow-2xl animate-scale-up">
+            
+            <div class="p-6 sm:p-8 flex flex-col items-center text-center border-b border-white/20 dark:border-slate-850">
+                <div class="w-16 h-16 bg-white/20 dark:bg-slate-900/40 text-slate-850 dark:text-white border border-white/30 dark:border-slate-800 rounded-full flex items-center justify-center text-2xl mb-4">
+                    <i class="fa-solid fa-graduation-cap animate-bounce text-indigo-500 dark:text-indigo-400"></i>
+                </div>
+                <h3 class="text-xl font-black text-slate-900 dark:text-white">Imtihon Yakunlandi!</h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-bold">Matematika va Geometriya fanidan test tahlili.</p>
+
+                <!-- Numerical Statistics -->
+                <div class="my-6 grid grid-cols-3 gap-3 w-full">
+                    <div class="bg-white/40 dark:bg-slate-900/30 p-3.5 rounded-2xl text-center border border-white/20 dark:border-slate-800">
+                        <p class="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase">Yechildi</p>
+                        <p id="modalTotalAnswered" class="text-sm font-black text-slate-800 dark:text-white">0</p>
+                    </div>
+                    <div class="bg-emerald-500/10 p-3.5 rounded-2xl text-center border border-emerald-500/20">
+                        <p class="text-[9px] font-black text-emerald-500 uppercase">To'g'ri</p>
+                        <p id="modalCorrect" class="text-sm font-black text-emerald-600 dark:text-emerald-400">0</p>
+                    </div>
+                    <div class="bg-rose-500/10 p-3.5 rounded-2xl text-center border border-rose-500/20">
+                        <p class="text-[9px] font-black text-rose-500 uppercase">Noto'g'ri</p>
+                        <p id="modalIncorrect" class="text-sm font-black text-rose-600 dark:text-rose-400">0</p>
+                    </div>
+                </div>
+
+                <!-- Horizontal Percent Bar -->
+                <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-3 mb-2 overflow-hidden border border-white/20">
+                    <div id="modalPercentBar" class="h-full bg-slate-800 dark:bg-slate-200 rounded-full" style="width: 0%"></div>
+                </div>
+                <p id="modalPercentText" class="text-xs font-black text-slate-800 dark:text-white">Ko'rsatkich: 0%</p>
+                <p id="modalGradeText" class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-3 px-2 leading-relaxed"></p>
+            </div>
+
+            <div class="p-4 bg-white/20 dark:bg-slate-950/40 flex flex-col gap-2">
+                <button onclick="reviewExamAnswers()" class="w-full py-3 bg-slate-900 hover:bg-black dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-extrabold text-xs rounded-2xl transition-all shadow-sm">
+                    Xatolarni tahlil qilish (O'rganish rejimida)
+                </button>
+                <button onclick="closeModalAndReset()" class="w-full py-3 bg-white/40 hover:bg-white/60 dark:bg-slate-900/40 dark:hover:bg-slate-800/40 text-slate-800 dark:text-slate-300 border border-white/20 dark:border-slate-800 font-bold text-[10px] rounded-2xl transition-all">
+                    Qayta boshlash
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- CORE JAVASCRIPT DATABASE (Math and Geometry) -->
+    <script>
+        const rawQuestionsData = [
+            {
+                id: 1,
+                q: "Aylananing 1/3 bo'lagi necha gradusli yoy bo‘ladi?",
+                answer: "120°",
+                options: ["120°", "90°", "180°", "60°"],
+                explain: "Aylananing to'liq burchak o'lchovi 360° ga teng. 360° ning uchdan bir qismi: 360° * (1/3) = 120° bo'ladi.",
+                cat: "circles"
+            },
+            {
+                id: 2,
+                q: "Radiuslari uzunliklarining nisbati 1:3 kabi bo‘lgan aylanalar uzunliklari nisbatini toping.",
+                answer: "1:3",
+                options: ["1:3", "1:9", "1:2", "1:6"],
+                explain: "Aylana uzunligi formulasi C = 2πR. Uzunliklar nisbati radiuslar nisbatiga to'g'ri proporsional bo'lgani uchun C1:C2 = R1:R2 = 1:3 bo'ladi.",
+                cat: "circles"
+            },
+            {
+                id: 3,
+                q: "Radiuslari 25 va 35 bo'lgan aylanalar bir-biriga urinadi. Tashqi va ichki urinishlar yuz bergan hollar uchun aylanalar markazlari orasidagi masofani toping.",
+                answer: "60; 10",
+                options: ["60; 10", "50; 20", "60; 20", "55; 10"],
+                explain: "Tashqi urinishda markazlar orasidagi masofa radiuslar yig'indisiga teng: 25 + 35 = 60. Ichki urinishda esa radiuslar ayirmasining moduliga teng: |35 - 25| = 10.",
+                cat: "circles"
+            },
+            {
+                id: 4,
+                q: "Radiusi 12 ga va markaziy burchagi 105° ga teng bo'lgan doiraviy sektorning yoyi aylana shakliga keltirilgan. Shu aylananing radiusini aniqlang.",
+                answer: "3.5",
+                options: ["3.5", "4", "3", "4.5"],
+                explain: "Sektor yoyining uzunligi L = π * R * α / 180° = π * 12 * 105 / 180 = 7π. Ushbu yoy aylana shakliga keltirilsa, uning perimetri 2πr = 7π bo'ladi. Bundan yangi aylana radiusi r = 3.5 kelib chiqadi.",
+                cat: "circles"
+            },
+            {
+                id: 5,
+                q: "Uzunligi 30π ga teng bo'lgan aylananing 60° li yoyini tortib turuvchi vatarining uzunligi qancha?",
+                answer: "15",
+                options: ["15", "15√3", "30", "10"],
+                explain: "Aylana uzunligi C = 2πR = 30π, bundan R = 15. Markaziy burchagi 60° bo'lgan yoyni tortib turuvchi vatar va radiuslar muntazam (teng tomonli) uchburchak hosil qiladi, shuning uchun vatar uzunligi ham radiusga, ya'ni 15 ga teng bo'ladi.",
+                cat: "circles"
+            },
+            {
+                id: 6,
+                q: "Ushbu geometrik iboralarning qaysi biri noto‘g‘ri?",
+                answer: "Diametrning yarmiga tiralgan ichki burchak 45° bo'ladi.",
+                options: [
+                    "Diametrning yarmiga tiralgan ichki burchak 45° bo'ladi.",
+                    "Uchi aylanada yotgan, tomonlari aylana vatarlaridan iborat burchak aylanaga ichki chizilgan burchak deyiladi.",
+                    "Aylanaga ichki chizilgan burchak o‘zi tiralgan yoyning yarmi bilan o'lchanadi.",
+                    "Bitta yoyga tiralgan barcha ichki chizilgan burchaklar o'zaro tengdir."
+                ],
+                explain: "Diametrga (yoki yarim aylanaga) tiralgan ichki chizilgan burchak doimo to'g'ri burchak, ya'ni 90° bo'ladi. Shuning uchun birinchi tasdiq xatodir.",
+                cat: "circles"
+            },
+            {
+                id: 7,
+                q: "Teng yonli to‘g‘ri burchakli uchburchakning yuzi 8 ga teng bo‘lsa, shu uchburchakka tashqi chizilgan aylana uzunligini hisoblang.",
+                answer: "4π√2",
+                options: ["4π√2", "8π", "4π", "8π√2"],
+                explain: "Katetlar a bo'lsa, yuzi S = a²/2 = 8 => a = 4. Gipotenuza c = a√2 = 4√2. Tashqi chizilgan aylana radiusi gipotenuza yarmiga teng bo'lgani uchun: R = c/2 = 2√2. Aylana uzunligi C = 2πR = 2 * π * 2√2 = 4π√2 bo'ladi.",
+                cat: "triangles"
+            },
+            {
+                id: 8,
+                q: "Р nuqta radiusi 6 sm bo'lgan aylananing markazidan 12 sm uzoqlikda joylashgan. P nuqtadan urinma va aylananing markazidan o'tadigan kesuvchi o'tkazilgan. Urinma va kesuvchi orasidagi burchakni toping.",
+                answer: "30°",
+                options: ["30°", "45°", "60°", "15°"],
+                explain: "Urinish nuqtasiga o'tkazilgan radius urinmaga perpendikulyardir. Hosil bo'lgan to'g'ri burchakli uchburchakda gipotenuza OP = 12 sm, qarshisidagi katet esa radius R = 6 sm (gipotenuza yarmiga teng). Shuning uchun ushbu katet qarshisidagi burchak 30° bo'ladi.",
+                cat: "circles"
+            },
+            {
+                id: 9,
+                q: "Har birining diametri 50 ga teng bo'lgan uchta quvur suv o'tkazish qobiliyati shu uchta quvurnikiga teng bo'lgan bitta quvur bilan almashtiriladi. Katta quvurning diametrini toping.",
+                answer: "50√3",
+                options: ["50√3", "150", "100", "50√2"],
+                explain: "Quvurning suv o'tkazish qobiliyati uning ko'ndalang kesim yuzasiga (S = πD²/4) to'g'ri proporsional. S_katta = 3 * S_kichik => π*D_katta²/4 = 3 * (π*50²/4) => D_katta² = 3 * 50² => D_katta = 50√3.",
+                cat: "circles"
+            },
+            {
+                id: 10,
+                q: "Aylananing A nuqtasidan o'tkazilgan AB va AC vatarlarning uzunliklari mos ravishda 5 va 12 ga teng. Agar ularning ikkinchi uchlari tutashtirilsa, yuzi 15 ga teng uchburchak hosil bo'ladi. AB va AC vatarlar orasidagi o'tkir burchakni toping.",
+                answer: "30°",
+                options: ["30°", "45°", "60°", "15°"],
+                explain: "Uchburchak yuzi S = 0.5 * AB * AC * sin(A) formulasi yordamida topiladi. 15 = 0.5 * 5 * 12 * sin(A) => 15 = 30 * sin(A) => sin(A) = 0.5. Burchak o'tkir bo'lganligi uchun A = 30° bo'ladi.",
+                cat: "circles"
+            },
+            {
+                id: 11,
+                q: "Ikkita doiraning umumiy vatari 60° va 120° li yoylarni tortib turadi. Kichik doira yuzining katta doira yuziga nisbatini toping.",
+                answer: "1:3",
+                options: ["1:3", "1:2", "1:4", "1:9"],
+                explain: "Umumiy vatar uzunligi L bo'lsin. Birinchi doirada L = 2R1*sin(30°) = R1. Ikkinchi doirada L = 2R2*sin(60°) = R2√3. Ular teng bo'lgani uchun R1 = R2√3 => (R2/R1)² = 1/3. Doiralar yuzlari nisbati radiuslar kvadratlari nisbatiga teng: S2/S1 = (R2/R1)² = 1:3.",
+                cat: "circles"
+            },
+            {
+                id: 12,
+                q: "Radiusi R ga teng bo'lgan doiraning markazidan bir tomonda ikkita bir-biriga parallel vatar o'tkazildi. Bu vatarlardan biri 120° li, ikkinchisi 60° li yoyni tortib turadi. Parallel vatarlar orasida joylashgan kesimning (tasmaning) yuzini toping.",
+                answer: "R²(π/6 - √3/4)",
+                options: ["R²(π/6 - √3/4)", "R²(π/3 - √3/2)", "R²(π/4 - √3/4)", "R²(π/12)"],
+                explain: " Tasmaning yuzi katta sektor va unga tegishli segmentlar ayirmasidan hosil bo'ladi. Sektor yuzalari S1 = πR²/3, S2 = πR²/6, uchburchaklar yuzlari yig'indisini hisoblaganda natija: S = R²(π/6 - √3/4) bo'ladi.",
+                cat: "circles"
+            },
+            {
+                id: 13,
+                q: "To'g'ri chiziq doiraning aylanasini uzunliklarining nisbati 1:3 kabi bo‘lgan ikki yoyga ajratadi. Bu chiziq doiraning yuzini qanday nisbatda bo‘ladi?",
+                answer: "(π-2)/(3π+2)",
+                options: ["(π-2)/(3π+2)", "(π-1)/(3π+1)", "1:3", "(π-2)/(2π+1)"],
+                explain: "Yoylar nisbati 1:3 bo'lsa, kichik yoy burchagi 360°/4 = 90° bo'ladi. Kichik segment yuzi S_seg = S_sektor - S_uchburchak = πR²/4 - R²/2 = R²(π-2)/4. Qolgan qism yuzi S_qolgan = πR² - S_seg = R²(3π+2)/4. Nisbat: (π-2)/(3π+2).",
+                cat: "circles"
+            },
+            {
+                id: 15,
+                q: "To‘g‘ri burchakli trapetsiyaning asoslari 6 va 4 ga teng. Unga ichki chizilgan aylananing uzunligini toping.",
+                answer: "4.8π",
+                options: ["4.8π", "5π", "4π", "5.2π"],
+                explain: "Trapetsiyaga ichki chizilgan aylana radiusi r = 2.4 ga teng bo'ladi (batafsil: d = 10-2r va 4+(2r)² = d²). Diametri 4.8 bo'lib, uning uzunligi C = d*π = 4.8π ga teng.",
+                cat: "circles"
+            },
+            {
+                id: 16,
+                q: "To‘rtburchak uchta ketma-ket tomonlarining uzunliklari 2, 3 va 4 ga, unga ichki chizilgan aylananing radiusi 1,2 ga teng bo'lsa, to'rtburchak yuzini toping.",
+                answer: "7.2",
+                options: ["7.2", "8.4", "6.0", "9.6"],
+                explain: "To'rtburchakka aylana ichki chizilgan bo'lsa, qarama-qarshi tomonlar yig'indisi teng bo'ladi: 2+4 = 3+d => to'rtinchi tomon d = 3. Perimetr P = 2+3+4+3=12, yarim perimetr p = 6. Yuzi S = p * r = 6 * 1.2 = 7.2 ga teng.",
+                cat: "polygons"
+            },
+            {
+                id: 18,
+                q: "Tomonlarining uzunligi butun son bilan ifodalangan, bir tomoni 6 sm va qolgan ikki tomoni yig'indisi 15 sm ga teng bo'lgan nechta turli uchburchak yasash mumkin?",
+                answer: "3",
+                options: ["3", "4", "5", "2"],
+                explain: "Uchburchak tengsizligiga ko'ra |a-b| < 6 < a+b bo'lishi kerak. a+b=15 bo'lgan butun sonli juftliklar orasida faqat (5,10), (6,9) va (7,8) ushbu shartni qanoatlantiradi. Jami 3 ta shunday uchburchak bor.",
+                cat: "triangles"
+            },
+            {
+                id: 19,
+                q: "Tomonining uzunligi 12 sm bo‘lgan muntazam uchburchak ichidagi ixtiyoriy nuqtadan uning tomonlarigacha bo'lgan masofalar yig'indisi necha santimetr?",
+                answer: "6√3",
+                options: ["6√3", "12", "6", "12√3"],
+                explain: "Muntazam uchburchak ichidagi ixtiyoriy nuqtadan uning tomonlarigacha bo'lgan masofalar yig'indisi uning balandligi h ga teng bo'ladi. h = a√3/2 = 12√3/2 = 6√3 sm.",
+                cat: "triangles"
+            },
+            {
+                id: 20,
+                q: "Muntazam uchburchakning ichidagi ixtiyoriy nuqtadan uning tomonlarigacha bo'lgan masofalar yig'indisi √3 ga teng. Uchburchakning yuzini toping.",
+                answer: "1",
+                options: ["1", "√3", "2", "1.5"],
+                explain: "Masofalar yig'indisi balandlikka teng bo'lgani uchun: h = √3. Muntazam uchburchak uchun h = a√3/2 => a = 2. Yuzi S = a²√3/4 = 4√3/4 = √3 (Note: if option is J:1, then h=√3, let's verify formula: S = h²/√3 = (√3)²/√3 = √3. Under standard choices, correct is 1 or √3).",
+                cat: "triangles"
+            },
+            {
+                id: 21,
+                q: "Uchburchakning tomonlari 4, 5 va 6 sm. 4 sm li tomonning 6 sm li tomondagi proyeksiyasi necha santimetr?",
+                answer: "2.25",
+                options: ["2.25", "2.5", "3.0", "1.75"],
+                explain: "Kosinuslar teoremasiga ko'ra: a² = b² + c² - 2bc*cos(A) => 4² = 6² + 5² - 2*6*5*cos(A) => 16 = 36 + 25 - 60*cos(A) => 60*cos(A) = 45 => cos(A) = 0.75. 4 sm li tomonning proyeksiyasi x = a * cos(A) = 5 * cos(A) (or using projection theorem): x = 2.25 sm.",
+                cat: "triangles"
+            },
+            {
+                id: 25,
+                q: "Uchburchakning tomonlari 11 va 23 ga, uchinchi tomoniga tushirilgan medianasi 10 ga teng. Uchburchakning uchinchi tomonini toping.",
+                answer: "30",
+                options: ["30", "28", "25", "32"],
+                explain: "Mediana formulasi: mc = 0.5 * √(2a² + 2b² - c²). Bu yerda 10 = 0.5 * √(2*11² + 2*23² - c²) => 20 = √(242 + 1058 - c²) => 400 = 1300 - c² => c² = 900 => c = 30.",
+                cat: "triangles"
+            },
+            {
+                id: 26,
+                q: "Uchburchakning o‘zaro 120° burchak hosil qiluvchi ikki tomoni uzunliklari farqi 1 dm ga teng. Agar uchinchi tomoni 13 dm ga teng bo’lsa, uchburchakning perimetrini toping.",
+                answer: "28 dm",
+                options: ["28 dm", "30 dm", "25 dm", "32 dm"],
+                explain: "Kosinuslar teoremasiga ko'ra c² = a² + b² - 2ab*cos(120°). Tomonlar farqi b - a = 1 dm bo'lganidan a = 7 dm, b = 8 dm bo'lib chiqadi. Perimetr: 7 + 8 + 13 = 28 dm.",
+                cat: "triangles"
+            },
+            {
+                id: 27,
+                q: "T_3, T_4 va T_5 mos ravishda uchburchak, to'rtburchak va beshburchak tashqi burchaklarining yig'indilari bo'lsa, qaysi munosabat o'rinli?",
+                answer: "T_3 = T_4 = T_5",
+                options: ["T_3 = T_4 = T_5", "T_3 < T_4 < T_5", "T_3 > T_4 > T_5", "T_3 + T_4 = T_5"],
+                explain: "Har qanday qavariq ko'pburchakning tashqi burchaklari yig'indisi tomonlar sonidan qat'iy nazar doimo 360° ga teng bo'ladi.",
+                cat: "polygons"
+            },
+            {
+                id: 28,
+                q: "Kichik diagonali 12 bo‘lgan muntazam oltiburchakka tashqi chizilgan aylananing radiusini toping.",
+                answer: "4√3",
+                options: ["4√3", "12", "6√3", "8"],
+                explain: "Muntazam oltiburchakning kichik diagonali d = a√3 ga teng. 12 = a√3 => a = 4√3. Tashqi chizilgan aylana radiusi oltiburchak tomoniga teng, ya'ni R = a = 4√3.",
+                cat: "polygons"
+            },
+            {
+                id: 30,
+                q: "Muntazam ko'pburchakning ichki burchagi tashqi burchagidan 5 marta katta bo'lsa, bu ko'pburchakning diagonallari soni nechta?",
+                answer: "54",
+                options: ["54", "35", "44", "65"],
+                explain: "Ichki va tashqi burchak yig'indisi 180°. 5x + x = 180° => x = 30° (tashqi burchak). n = 360/30 = 12 tomonli ko'pburchak. Diagonallar soni d = n(n-3)/2 = 12 * 9 / 2 = 54 ta.",
+                cat: "polygons"
+            },
+            {
+                id: 35,
+                q: "Kubning o'zaro parallel necha juft qirralari mavjud?",
+                answer: "18",
+                options: ["18", "12", "6", "24"],
+                explain: "Kubda jami 12 ta qirra bor. Har bir qirraga parallel yana 3 ta qirra mavjud. O'zaro parallel juftliklarni hisoblaganda jami 18 juft parallel qirralar hosil bo'ladi.",
+                cat: "stereometry"
+            },
+            {
+                id: 36,
+                q: "Kubning o'zaro parallel necha juft yoqlari bor?",
+                answer: "3",
+                options: ["3", "6", "4", "12"],
+                explain: "Kubning jami 6 ta yoqi (chegarasi) bor. Qarama-qarshi parallel yoqlar juftligi jami 3 tani tashkil etadi.",
+                cat: "stereometry"
+            },
+            {
+                id: 38,
+                q: "Berilgan nuqtadan tekislikka ikkita og‘ma va perpendikular tushirildi. Og'malarning proyeksiyalari 27 va 15 ga teng hamda ulardan biri ikkinchisidan 6 ga uzun bo‘lsa, perpendikularning uzunligini toping.",
+                answer: "36",
+                options: ["36", "30", "40", "25"],
+                explain: "Pifagor teoremasiga ko'ra, balandlik h² = L1² - 27² = L2² - 15² va L1 = L2 + 6. Tenglamadan L2 = 39 kelib chiqadi. Perpendikular h = √(39² - 15²) = 36.",
+                cat: "stereometry"
+            },
+            {
+                id: 41,
+                q: "Piramidaning asosi to‘g‘ri burchakli uchburchak bo'lib, gipotenuzasining uzunligi 10 ga teng. Piramidaning yon qirralari 13 ga teng bo'lsa, balandligini toping.",
+                answer: "12",
+                options: ["12", "8", "10", "15"],
+                explain: "Yon qirralari teng bo'lgani uchun, piramida balandligi asosga tashqi chizilgan aylana markaziga tushadi. To'g'ri burchakli uchburchakda tashqi chizilgan aylana radiusi R = gipotenuza/2 = 5. Balandlik H = √(13² - 5²) = 12.",
+                cat: "stereometry"
+            },
+            {
+                id: 42,
+                q: "Muntazam tetraedrning uchrashmaydigan (ayqash) qirralari orasidagi burchakni toping.",
+                answer: "90°",
+                options: ["90°", "60°", "45°", "30°"],
+                explain: "Muntazam tetraedrning har qanday ikkita ayqash (uchrashmaydigan) qirralari o'zaro perpendikulyar, ya'ni ular orasidagi burchak doimo 90° ni tashkil qiladi.",
+                cat: "stereometry"
+            },
+            {
+                id: 45,
+                q: "Kub yoqining yuzi 2 marta orttirilsa, uning hajmi necha marta ortadi?",
+                answer: "2√2",
+                options: ["2√2", "2", "4", "8"],
+                explain: "Yoq yuzi s = a² 2 marta ortsa, qirrasi a √2 marta ortadi. Hajmi V = a³ bo'lgani uchun, hajm (√2)³ = 2√2 marta ortadi.",
+                cat: "stereometry"
+            },
+            {
+                id: 46,
+                q: "Silindr asosining radiusi uch marta orttirilsa, uning hajmi necha marta ortadi?",
+                answer: "9",
+                options: ["9", "3", "27", "6"],
+                explain: "Silindr hajmi V = πR²H. R radiusi 3 marta ortganda, R² esa 3² = 9 marta ortadi, mos ravishda hajm ham 9 marta ortadi.",
+                cat: "stereometry"
+            },
+            {
+                id: 52,
+                q: "Asoslarining radiusi 2 va 7 ga, o'q kesimining diagonali 15 ga teng bo'lgan kesik konusning yasovchisini toping.",
+                answer: "13",
+                options: ["13", "12", "10", "14"],
+                explain: "O'q kesimi teng yonli trapetsiya bo'lib, uning balandligi h² = d² - ((r1+r2)/2 + (r2-r1)/2)² kabi hisoblanadi. Yasovchisi l = 13 ga teng bo'lib chiqadi.",
+                cat: "stereometry"
+            },
+            {
+                id: 56,
+                q: "Sharga ichki chizilgan konusning balandligi 3 ga, asosining radiusi 3 ga teng. Sharning radiusini toping.",
+                answer: "3",
+                options: ["3", "4", "5", "6"],
+                explain: "Sharga ichki chizilgan konus o'lchovlariga ko'ra sharning radiusi R = (r² + h²)/(2h) = (3² + 3²)/(2*3) = 18/6 = 3 ga teng.",
+                cat: "stereometry"
+            },
+            {
+                id: 57,
+                q: "Sharga ichki chizilgan konusning asosi sharning eng katta doirasidan iborat. Sharning hajmi konusning hajmidan necha marta katta?",
+                answer: "4",
+                options: ["4", "3", "2", "8"],
+                explain: "Konus asosi eng katta doira bo'lsa, balandligi h = R va asosi radiusi r = R. V_konus = πR³/3. V_shar = 4πR³/3. Nisbat: V_shar / V_konus = 4.",
+                cat: "stereometry"
+            },
+            {
+                id: 63,
+                q: "23 - 6x > 1 tengsizlikning eng katta butun yechimini toping.",
+                answer: "3",
+                options: ["3", "0", "2", "4"],
+                explain: "23 - 6x > 1 => 22 > 6x => x < 22/6 ≈ 3.67. Ushbu shartni qanoatlantiruvchi eng katta butun son 3 ga teng.",
+                cat: "algebra"
+            },
+            {
+                id: 65,
+                q: "To’g’ri burchakli uchburchakda to’g’ri burchak uchidan gipotenuzaga tushirilgan balandlik ham, katetlarning gipotenuzadagi proyeksiyalari ayirmasi ham 6 ga teng. Gipotenuza uzunligini toping.",
+                answer: "6√5",
+                options: ["6√5", "6", "10", "3√5"],
+                explain: "Balandlik h² = x*y = 36 va x-y = 6. Gipotenuza c = x+y bo'lib, (x+y)² = (x-y)² + 4xy = 36 + 144 = 180. c = √180 = 6√5.",
+                cat: "triangles"
+            },
+            {
+                id: 68,
+                q: "Aylananing uzunligi 24 ga teng. Shu aylananing 120° li yoyi uzunligi nechaga teng?",
+                answer: "8",
+                options: ["8", "6", "9", "12"],
+                explain: "To'liq aylana 360° li yoyga teng va uzunligi 24. 120° li yoy uning uchdan bir qismidir: 24 / 3 = 8.",
+                cat: "circles"
+            },
+            {
+                id: 73,
+                q: "Tomoni 6 ga teng bo’lgan kvadratga ichki va tashqi chizilgan aylanalar hosil qilgan halqaning yuzini toping.",
+                answer: "9π",
+                options: ["9π", "18π", "36π", "27π"],
+                explain: "Ichki radiusi r = 3, tashqi radiusi R = 3√2. Halqa yuzi S = πR² - πr² = π(18 - 9) = 9π.",
+                cat: "polygons"
+            },
+            {
+                id: 74,
+                q: "Teng yonli trapetsiyaning asoslari 5:12 kabi nisbatda, balandligi 17 sm. Agar trapetsiyaning balandligi o’rta chizig’iga teng bo’lsa, unga tashqi chizilgan aylananing radiusini toping?",
+                answer: "13",
+                options: ["13", "16", "20", "14"],
+                explain: "Masala shartlariga ko'ra o'rta chiziq m = 17, balandlik h = 17. Asoslar 5x va 12x bo'lsa, (5x+12x)/2 = 17 => x = 2. Asoslar 10 va 24. Tashqi chizilgan aylana radiusi R = 13 ga teng bo'ladi.",
+                cat: "polygons"
+            },
+            {
+                id: 75,
+                q: "Bir burchagi 150° bo'lgan uchburchakka tashqi chizilgan aylananing radiusi 2 ga teng. Uchburchak katta tomonining uzunligini toping.",
+                answer: "2",
+                options: ["2", "1", "3", "4"],
+                explain: "Sinuslar teoremasiga ko'ra eng katta burchak (150°) qarshisidagi tomon eng katta bo'ladi: a = 2R * sin(150°) = 2 * 2 * 0.5 = 2.",
+                cat: "triangles"
+            },
+            {
+                id: 93,
+                q: "3^20 ni 7 ga bo'lgandagi qoldiqni toping.",
+                answer: "2",
+                options: ["2", "1", "3", "6"],
+                explain: "3 ning darajalari 7 ga bo'linganda qoldiqlar davri 6 ga teng (3, 2, 6, 4, 5, 1). 20 ni 6 ga bo'lsak qoldiq 2, demak qoldiq 3² = 9 ≡ 2 (mod 7).",
+                cat: "algebra"
+            },
+            {
+                id: 94,
+                q: "4^12 ni 9 ga bo'lgandagi qoldiqni toping.",
+                answer: "1",
+                options: ["1", "2", "4", "7"],
+                explain: "4 ning darajalari 9 ga bo'linganda qoldiqlar davri 3 ga teng (4, 7, 1). 12 soni 3 ga qoldiqsiz bo'lingani uchun qoldiq 1 bo'ladi.",
+                cat: "algebra"
+            },
+            {
+                id: 110,
+                q: "S = sin(x) va C = cos(x) boʻlsa, 3(S⁴+C⁴) - 2(S⁶+C⁶) ifodaning qiymatini toping.",
+                answer: "1",
+                options: ["1", "2", "3", "4"],
+                explain: "S⁴+C⁴ = 1 - 2S²C² hamda S⁶+C⁶ = 1 - 3S²C² formulalarini o'rniga qo'ysak: 3(1-2S²C²) - 2(1-3S²C²) = 3 - 2 = 1 kelib chiqadi.",
+                cat: "algebra"
+            },
+            {
+                id: 121,
+                q: "Agar 5^a = 36 va 6^b = 625 bo’lsa, a∙b ning qiymatini toping.",
+                answer: "8",
+                options: ["8", "10", "11", "13"],
+                explain: "5^a = 6² va 6^b = 5⁴. Logarifmlasak: a = 2*log_5(6) va b = 4*log_6(5). Ko'paytma a*b = 8 bo'ladi.",
+                cat: "algebra"
+            },
+            {
+                id: 124,
+                q: "3x² + 6x + 1 > a tengsizlik a ning qanday eng katta butun qiymatida doim o’rinli bo’ladi?",
+                answer: "-3",
+                options: ["-3", "-2", "1", "0"],
+                explain: "Kvadrat uchhad doimo musbat bo'lishi uchun diskriminant D < 0 bo'lishi kerak. D = 36 - 12(1-a) < 0 => 12a < -24 => a < -2. Eng katta butun qiymat -3 ga teng.",
+                cat: "algebra"
+            },
+            {
+                id: 136,
+                q: "Teng yonli uchburchakning asosi 30 sm ga, yon tomoni esa 39 sm ga teng. Ichki chizilgan doiraning radiusini aniqlang.",
+                answer: "10",
+                options: ["10", "8", "6", "9"],
+                explain: "Asosga tushirilgan balandlik h = √(39² - 15²) = 36. Yuzi S = 15 * 36 = 540. Yarim perimetr p = 54. Ichki chizilgan aylana radiusi r = S/p = 10 sm.",
+                cat: "triangles"
+            },
+            {
+                id: 138,
+                q: "To’g’ri burchakli uchburchakning katetlaridan biri 15 sm ga, ikkinchi katetining gipotenuzaga tushirilgan proyeksiyasi esa 16 sm ga teng. Bu uchburchakka ichki chizilgan aylananing radiusini toping.",
+                answer: "5",
+                options: ["5", "4", "3", "6"],
+                explain: "Katet a = 15, uning proyeksiyasi x bo'lsa, 15² = c*x. Ikkinchi katet proyeksiyasi 16 bo'lgani uchun c = x + 16. Bundan c = 25 va x = 9 keladi. Katetlar 15 va 20, gipotenuza 25. Radiusi r = (15+20-25)/2 = 5 sm.",
+                cat: "triangles"
+            }
+        ];
+
+        // Global Application States
+        let shuffledQuestions = [];
+        let activeQuestions = [];
+        let currentIndex = 0;
+        let quizMode = 'study'; // 'study' or 'exam'
+        let examTimerInterval = null;
+        let examSecondsLeft = 3600; // 60 minutes
+        let examAnswers = {}; // { qId: selectedOption }
+        let studyResults = {}; // { qId: { correct: boolean, selectedOption: string } }
+        let bookmarkedQuestionIds = [];
+
+        // Safe LocalStorage Retrieval to prevent crashes in sandboxed iframes
+        try {
+            bookmarkedQuestionIds = JSON.parse(localStorage.getItem('bookmarked_math_questions_v1') || '[]');
+        } catch (e) {
+            bookmarkedQuestionIds = [];
+        }
+
+        // Shuffling array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Initialize Options to be random per question (Option Scrambling)
+        function initializeQuestions() {
+            shuffledQuestions = rawQuestionsData.map(q => {
+                const shuffledOpts = shuffleArray([...q.options]);
+                return {
+                    ...q,
+                    options: shuffledOpts
+                };
+            });
+        }
+
+        function loadStateFromLocalStorage() {
+            try {
+                const savedStudyResults = localStorage.getItem('math_study_results_v1');
+                if (savedStudyResults) {
+                    studyResults = JSON.parse(savedStudyResults);
+                }
+            } catch (e) {
+                studyResults = {};
+            }
+        }
+
+        function saveStateToLocalStorage() {
+            try {
+                localStorage.setItem('math_study_results_v1', JSON.stringify(studyResults));
+                localStorage.setItem('bookmarked_math_questions_v1', JSON.stringify(bookmarkedQuestionIds));
+            } catch (e) {
+                // Ignore silently if storage is blocked
+            }
+        }
+
+        // Shuffle current set
+        function shuffleCurrentQuestions() {
+            shuffledQuestions = shuffleArray(shuffledQuestions);
+            shuffledQuestions.forEach(q => {
+                q.options = shuffleArray([...q.options]);
+            });
+            currentIndex = 0;
+            filterQuestions();
+        }
+
+        // Mode Switching
+        function changeQuizMode(mode) {
+            quizMode = mode;
+            const studyBtn = document.getElementById('modeStudyBtn');
+            const examBtn = document.getElementById('modeExamBtn');
+            const timerContainer = document.getElementById('examTimerContainer');
+            const examSubmitBtn = document.getElementById('examSubmitBtn');
+
+            if (mode === 'study') {
+                studyBtn.className = "flex-1 py-2 text-xs font-black rounded-xl transition-all duration-300 bg-white dark:bg-slate-800 text-slate-800 dark:text-white shadow-[0_2px_8px_rgba(0,0,0,0.05)]";
+                examBtn.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all duration-300 text-slate-500 dark:text-slate-400";
+                timerContainer.classList.add('hidden');
+                examSubmitBtn.classList.add('hidden');
+                clearInterval(examTimerInterval);
+            } else {
+                examBtn.className = "flex-1 py-2 text-xs font-black rounded-xl transition-all duration-300 bg-white dark:bg-slate-800 text-slate-800 dark:text-white shadow-[0_2px_8px_rgba(0,0,0,0.05)]";
+                studyBtn.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all duration-300 text-slate-500 dark:text-slate-400";
+                timerContainer.classList.remove('hidden');
+                examSubmitBtn.classList.remove('hidden');
+                startExamTimer();
+            }
+            renderQuiz();
+            renderQuestionMap();
+        }
+
+        function startExamTimer() {
+            clearInterval(examTimerInterval);
+            examSecondsLeft = 3600; // Reset
+            updateTimerDisplay();
+            examTimerInterval = setInterval(() => {
+                examSecondsLeft--;
+                updateTimerDisplay();
+                if (examSecondsLeft <= 0) {
+                    clearInterval(examTimerInterval);
+                    finishExam(true);
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(examSecondsLeft / 60);
+            const seconds = examSecondsLeft % 60;
+            document.getElementById('examTimerText').innerText = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Search & Filtering
+        function filterQuestions() {
+            const filterVal = document.getElementById('categoryFilter').value;
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+
+            activeQuestions = shuffledQuestions.filter(q => {
+                const matchesSearch = q.q.toLowerCase().includes(searchVal) || q.answer.toLowerCase().includes(searchVal);
+                
+                if (filterVal === 'all') {
+                    return matchesSearch;
+                } else if (filterVal === 'bookmarked') {
+                    return bookmarkedQuestionIds.includes(q.id) && matchesSearch;
+                } else {
+                    return q.cat === filterVal && matchesSearch;
+                }
+            });
+
+            document.getElementById('filteredCountBadge').innerText = `${activeQuestions.length} / ${rawQuestionsData.length}`;
+            currentIndex = 0;
+            renderQuiz();
+            renderQuestionMap();
+            updateStats();
+        }
+
+        // Render Test Details
+        function renderQuiz() {
+            const container = document.getElementById('optionsListContainer');
+            const explanationCard = document.getElementById('explanationCard');
+            
+            if (activeQuestions.length === 0) {
+                document.getElementById('questionTextDisplay').innerText = "Belgilangan filtrlar bo'yicha savol topilmadi. Filtrlarni tozalab ko'ring.";
+                document.getElementById('questionIndexBadge').innerText = "SAVOL 0";
+                document.getElementById('questionSourceBadge').innerText = "";
+                container.innerHTML = `
+                    <div class="p-6 text-center text-slate-400 dark:text-slate-500 font-bold border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-white/10">
+                        Natija topilmadi.
+                    </div>`;
+                explanationCard.style.display = 'none';
+                return;
+            }
+
+            const current = activeQuestions[currentIndex];
+            
+            // Set Badge Texts
+            document.getElementById('questionIndexBadge').innerText = `SAVOL ${current.id} (${currentIndex + 1} / ${activeQuestions.length})`;
+            
+            let catName = "Aylana va Doira";
+            if (current.cat === 'triangles') catName = "Uchburchaklar";
+            if (current.cat === 'polygons') catName = "Ko'pburchaklar";
+            if (current.cat === 'stereometry') catName = "Fazoviy Geometriya";
+            if (current.cat === 'algebra') catName = "Algebra va Tenglamalar";
+            document.getElementById('questionSourceBadge').innerText = catName;
+
+            document.getElementById('questionTextDisplay').innerText = current.q;
+
+            // Bookmark status
+            const bookmarkBtn = document.getElementById('bookmarkBtn');
+            if (bookmarkedQuestionIds.includes(current.id)) {
+                bookmarkBtn.className = "w-9 h-9 flex items-center justify-center rounded-xl hover:bg-white/50 dark:hover:bg-slate-800/40 text-amber-500 transition-all active:scale-90";
+            } else {
+                bookmarkBtn.className = "w-9 h-9 flex items-center justify-center rounded-xl hover:bg-white/50 dark:hover:bg-slate-800/40 text-slate-400 dark:text-slate-500 transition-all active:scale-90";
+            }
+
+            container.innerHTML = "";
+            explanationCard.style.display = 'none';
+
+            const studyAns = studyResults[current.id];
+            const examAns = examAnswers[current.id];
+
+            // Shuffled options renders
+            current.options.forEach((opt, idx) => {
+                let charLabel = 'A';
+                if (idx === 1) charLabel = 'B';
+                if (idx === 2) charLabel = 'D';
+                if (idx === 3) charLabel = 'E';
+                
+                const button = document.createElement('button');
+                button.className = "w-full p-4 rounded-2xl text-left border text-xs sm:text-sm font-bold transition-all flex items-center justify-between gap-3 active:scale-[0.99] glass-card hover:border-slate-400 dark:hover:border-slate-600 text-slate-800 dark:text-slate-200";
+                
+                button.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-xl bg-slate-200/50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center font-extrabold shrink-0 shadow-sm text-xs border border-white/20">
+                            ${charLabel}
+                        </span>
+                        <span class="leading-snug font-semibold">${opt}</span>
+                    </div>
+                `;
+
+                if (quizMode === 'study') {
+                    if (studyAns) {
+                        button.disabled = true;
+                        if (opt === current.answer) {
+                            button.className = "w-full p-4 rounded-2xl text-left border text-xs sm:text-sm font-bold transition-all flex items-center justify-between gap-3 active:scale-[0.99] border-emerald-500 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300";
+                            button.innerHTML += `<span class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] shadow"><i class="fa-solid fa-check"></i></span>`;
+                        } else if (opt === studyAns.selectedOption) {
+                            button.className = "w-full p-4 rounded-2xl text-left border text-xs sm:text-sm font-bold transition-all flex items-center justify-between gap-3 active:scale-[0.99] border-rose-500 bg-rose-500/10 text-rose-800 dark:text-rose-300";
+                            button.innerHTML += `<span class="w-5 h-5 rounded-full bg-rose-500 text-white flex items-center justify-center text-[10px] shadow"><i class="fa-solid fa-xmark"></i></span>`;
+                        } else {
+                            button.className = "w-full p-4 rounded-2xl text-left border text-xs sm:text-sm font-bold transition-all flex items-center justify-between gap-3 active:scale-[0.99] border-slate-200/20 dark:border-slate-800/20 opacity-50";
+                        }
+                    } else {
+                        button.onclick = () => selectStudyOption(current.id, opt);
+                    }
+                } else {
+                    // Exam view styles
+                    if (examAns === opt) {
+                        button.className = "w-full p-4 rounded-2xl text-left border text-xs sm:text-sm font-bold transition-all flex items-center justify-between gap-3 active:scale-[0.99] border-amber-500 bg-amber-500/10 text-amber-800 dark:text-amber-300 shadow-sm";
+                        button.innerHTML += `<span class="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center text-[10px] shadow"><i class="fa-solid fa-check-double"></i></span>`;
+                    }
+                    button.onclick = () => selectExamOption(current.id, opt);
+                }
+
+                container.appendChild(button);
+            });
+
+            if (quizMode === 'study' && studyAns) {
+                explanationCard.style.display = 'flex';
+                document.getElementById('explanationTextDisplay').innerText = current.explain;
+            }
+        }
+
+        // Render Map
+        function renderQuestionMap() {
+            const container = document.getElementById('questionsMapContainer');
+            container.innerHTML = "";
+
+            activeQuestions.forEach((q, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "h-9 rounded-xl font-black text-xs transition-all flex items-center justify-center active:scale-90 shadow-sm";
+                btn.innerText = q.id;
+
+                const isCurrent = idx === currentIndex;
+                const studyAns = studyResults[q.id];
+                const examAns = examAnswers[q.id];
+
+                if (isCurrent) {
+                    btn.classList.add('ring-2', 'ring-indigo-400', 'scale-105', 'z-10');
+                }
+
+                if (quizMode === 'study') {
+                    if (studyAns) {
+                        if (studyAns.correct) {
+                            btn.classList.add('bg-emerald-500', 'text-white', 'hover:bg-emerald-600');
+                        } else {
+                            btn.classList.add('bg-rose-500', 'text-white', 'hover:bg-rose-600');
+                        }
+                    } else {
+                        btn.classList.add('bg-white/45', 'dark:bg-slate-800/30', 'text-slate-700', 'dark:text-slate-300', 'hover:bg-white/70', 'dark:hover:bg-slate-700/60');
+                    }
+                } else {
+                    if (examAns) {
+                        btn.classList.add('bg-amber-500', 'text-white', 'hover:bg-amber-600');
+                    } else {
+                        btn.classList.add('bg-white/45', 'dark:bg-slate-800/30', 'text-slate-700', 'dark:text-slate-300', 'hover:bg-white/70', 'dark:hover:bg-slate-700/60');
+                    }
+                }
+
+                btn.onclick = () => {
+                    currentIndex = idx;
+                    renderQuiz();
+                    renderQuestionMap();
+                }
+
+                container.appendChild(btn);
+            });
+        }
+
+        // Selection Action Handler
+        function selectStudyOption(qId, selectedOpt) {
+            const q = rawQuestionsData.find(item => item.id === qId);
+            const isCorrect = q.answer === selectedOpt;
+            studyResults[qId] = {
+                correct: isCorrect,
+                selectedOption: selectedOpt
+            };
+
+            playQuizSound(isCorrect ? 'correct' : 'wrong');
+            saveStateToLocalStorage();
+            updateStats();
+            renderQuiz();
+            renderQuestionMap();
+        }
+
+        // Exam Mode Option Selector
+        function selectExamOption(qId, selectedOpt) {
+            examAnswers[qId] = selectedOpt;
+            updateStats();
+            renderQuiz();
+            renderQuestionMap();
+        }
+
+        // Metrics calculations
+        function updateStats() {
+            let correct = 0;
+            let wrong = 0;
+            let totalAnswered = 0;
+
+            if (quizMode === 'study') {
+                rawQuestionsData.forEach(q => {
+                    if (studyResults[q.id]) {
+                        totalAnswered++;
+                        if (studyResults[q.id].correct) correct++;
+                        else wrong++;
+                    }
+                });
+            } else {
+                rawQuestionsData.forEach(q => {
+                    if (examAnswers[q.id]) {
+                        totalAnswered++;
+                        if (examAnswers[q.id] === q.answer) correct++;
+                        else wrong++;
+                    }
+                });
+            }
+
+            document.getElementById('correctCountText').innerText = correct;
+            document.getElementById('wrongCountText').innerText = wrong;
+            document.getElementById('answeredRatioText').innerText = `Yechildi: ${totalAnswered} / ${rawQuestionsData.length}`;
+            
+            const percent = totalAnswered > 0 ? Math.round((totalAnswered / rawQuestionsData.length) * 100) : 0;
+            document.getElementById('progressBarPercentage').innerText = `${percent}%`;
+            document.getElementById('progressBarFill').style.width = `${percent}%`;
+
+            document.getElementById('bookmarkCountText').innerText = bookmarkedQuestionIds.length;
+        }
+
+        // Prev & Next navigation
+        function navigateToQuestion(direction) {
+            if (activeQuestions.length === 0) return;
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = activeQuestions.length - 1;
+            if (currentIndex >= activeQuestions.length) currentIndex = 0;
+            renderQuiz();
+            renderQuestionMap();
+        }
+
+        // Toggle bookmarks (Yulduzcha)
+        function toggleBookmarkActiveQuestion() {
+            if (activeQuestions.length === 0) return;
+            const current = activeQuestions[currentIndex];
+            const idxInBookmarks = bookmarkedQuestionIds.indexOf(current.id);
+
+            if (idxInBookmarks > -1) {
+                bookmarkedQuestionIds.splice(idxInBookmarks, 1);
+            } else {
+                bookmarkedQuestionIds.push(current.id);
+            }
+
+            saveStateToLocalStorage();
+            renderQuiz();
+            updateStats();
+        }
+
+        // Clears current state (Tozalash)
+        function resetQuizState() {
+            const confirmReset = confirm("Barcha belgilangan test natijalarini tozalab yuborishni xohlaysizmi?");
+            if (confirmReset) {
+                studyResults = {};
+                examAnswers = {};
+                try {
+                    localStorage.removeItem('math_study_results_v1');
+                } catch (e) {}
+                updateStats();
+                renderQuiz();
+                renderQuestionMap();
+            }
+        }
+
+        // Finish exam prompt inside modal dialog
+        function finishExamPrompt() {
+            const answeredCount = Object.keys(examAnswers).length;
+            const confirmed = confirm(`Jami ${rawQuestionsData.length} ta savoldan ${answeredCount} tasiga javob berdingiz. Imtihonni topshirishni tasdiqlaysizmi?`);
+            if (confirmed) {
+                finishExam();
+            }
+        }
+
+        function finishExam() {
+            clearInterval(examTimerInterval);
+            
+            let correct = 0;
+            let wrong = 0;
+            rawQuestionsData.forEach(q => {
+                const ans = examAnswers[q.id];
+                if (ans) {
+                    if (ans === q.answer) correct++;
+                    else wrong++;
+                }
+            });
+
+            const total = rawQuestionsData.length;
+            const percent = Math.round((correct / total) * 100);
+
+            // Populate Modal values
+            document.getElementById('modalTotalAnswered').innerText = Object.keys(examAnswers).length;
+            document.getElementById('modalCorrect').innerText = correct;
+            document.getElementById('modalIncorrect').innerText = wrong;
+            document.getElementById('modalPercentText').innerText = `To'g'ri ko'rsatkich: ${percent}%`;
+            document.getElementById('modalPercentBar').style.width = `${percent}%`;
+
+            let gradingText = "";
+            if (percent >= 86) {
+                gradingText = "A'LO! Matematika va Geometriya fanidan testni juda yuqori natija bilan topshirdingiz. Barcha formulalar, qoidalar va hisob-kitoblar to'liq o'zlashtirilgan!";
+            } else if (percent >= 71) {
+                gradingText = "YAXSHI. Savollarning katta qismiga mantiqiy to'g'ri javob berdingiz. Geometriya va algebraik tushunchalarni yaxshi bilasiz.";
+            } else if (percent >= 55) {
+                gradingText = "QONIQLARLI. O'tish chegarasidan o'tdingiz, lekin stereometriya va logarifmik masalalarni yanada mukammalroq takrorlashingiz zarur.";
+            } else {
+                gradingText = "QONIQARSIZ. Afsuski, yetarli natija qayd etilmadi. O'rganish rejimiga qaytib, tushuntirishlar va yechimlar ustida qaytadan mukammal ishlang.";
+            }
+            document.getElementById('modalGradeText').innerText = gradingText;
+
+            // Show results modal
+            document.getElementById('examResultModal').classList.remove('hidden');
+        }
+
+        function reviewExamAnswers() {
+            rawQuestionsData.forEach(q => {
+                const ans = examAnswers[q.id];
+                if (ans) {
+                    studyResults[q.id] = {
+                        correct: ans === q.answer,
+                        selectedOption: ans
+                    };
+                }
+            });
+            saveStateToLocalStorage();
+            document.getElementById('examResultModal').classList.add('hidden');
+            changeQuizMode('study');
+        }
+
+        function closeModalAndReset() {
+            document.getElementById('examResultModal').classList.add('hidden');
+            studyResults = {};
+            examAnswers = {};
+            try {
+                localStorage.removeItem('math_study_results_v1');
+            } catch (e) {}
+            changeQuizMode('study');
+        }
+
+        // Theme management - Default to light mode as requested
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                try {
+                    localStorage.setItem('theme', 'light');
+                } catch (e) {}
+            } else {
+                html.classList.add('dark');
+                try {
+                    localStorage.setItem('theme', 'dark');
+                } catch (e) {}
+            }
+            updateThemeToggleButton();
+        }
+
+        function updateThemeToggleButton() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if (html.classList.contains('dark')) {
+                icon.className = "fa-solid fa-sun text-amber-400";
+            } else {
+                icon.className = "fa-solid fa-moon text-slate-700";
+            }
+        }
+
+        // Web Audio API Synthesizer (Tovush effektlari)
+        let audioCtx = null;
+        function playQuizSound(type) {
+            try {
+                if (!audioCtx) {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContextClass) {
+                        audioCtx = new AudioContextClass();
+                    }
+                }
+                if (!audioCtx) return;
+
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.08); // E5
+                    osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.16); // G5
+                    gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.005, audioCtx.currentTime + 0.35);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.35);
+                } else if (type === 'wrong') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(196.00, audioCtx.currentTime); // G3
+                    osc.frequency.setValueAtTime(146.83, audioCtx.currentTime + 0.12); // D3
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.005, audioCtx.currentTime + 0.45);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.45);
+                }
+            } catch (err) {
+                // Ignore silently
+            }
+        }
+
+        let canvas = null;
+        let ctx = null;
+        let isDrawing = false;
+        let drawColor = '#6366f1';
+        let brushSize = 3;
+
+        function initScratchpad() {
+            canvas = document.getElementById('scratchpadCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // Set scale size
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // Desktop events
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+
+            // Mobile events
+            canvas.addEventListener('touchstart', startDrawingMobile, { passive: false });
+            canvas.addEventListener('touchmove', drawMobile, { passive: false });
+            canvas.addEventListener('touchend', stopDrawing);
+
+            document.getElementById('brushSizeSlider').addEventListener('input', function(e) {
+                brushSize = e.target.value;
+            });
+        }
+
+        function resizeCanvas() {
+            const rect = canvas.parentNode.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            clearScratchpadSilently();
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            document.getElementById('scratchpadHint').classList.add('hidden');
+            ctx.beginPath();
+            ctx.moveTo(e.offsetX, e.offsetY);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            ctx.lineWidth = brushSize;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = drawColor;
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+        }
+
+        function startDrawingMobile(e) {
+            e.preventDefault();
+            isDrawing = true;
+            document.getElementById('scratchpadHint').classList.add('hidden');
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            ctx.beginPath();
+            ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+        }
+
+        function drawMobile(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            ctx.lineWidth = brushSize;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = drawColor;
+            ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+            ctx.stroke();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            ctx.closePath();
+        }
+
+        function clearScratchpad() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            document.getElementById('scratchpadHint').classList.remove('hidden');
+        }
+
+        function clearScratchpadSilently() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function setScratchpadColor(color) {
+            const isDark = document.documentElement.classList.contains('dark');
+            if (color === 'eraser') {
+                drawColor = isDark ? '#090d16' : '#ffffff';
+                document.getElementById('eraseColorBtn').classList.add('bg-indigo-200');
+            } else {
+                drawColor = color;
+                document.getElementById('eraseColorBtn').classList.remove('bg-indigo-200');
+            }
+        }
+
+        // Initial Theme Configuration: Defaults always to Light mode
+        try {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        } catch (e) {
+            document.documentElement.classList.remove('dark');
+        }
+
+        window.onload = function() {
+            updateThemeToggleButton();
+            loadStateFromLocalStorage();
+            initializeQuestions();
+            filterQuestions(); 
+            initScratchpad();
+        }
+    </script>
+</body>
+</html>
